@@ -1,7 +1,7 @@
 const path = require('path')
 const koa = require('koa')
-const views = require('koa-views')
 const mongoose = require('mongoose')
+const bodyParser = require('koa-bodyparser')
 
 const router = require('./routes')
 const config = require('./config')
@@ -14,11 +14,7 @@ mongoose.connect(config.mongodb).then(
 
 const app = new koa()
 
-// 切换模板引擎
-app.use(views(path.join(__dirname, './views'), {
-  extension: 'ejs'
-}))
-
+app.use(bodyParser())
 // 引用路由
 app
   .use(router.routes())
