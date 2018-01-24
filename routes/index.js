@@ -1,7 +1,9 @@
 const router = require('koa-router')()
-const api = require('./api')
+const auth = require('./auth')
+const article = require('./article')
 
-router.use('/api', api.routes(), api.allowedMethods())
+router.use('/auth', auth.routes(), auth.allowedMethods())
+router.use('/article', article.routes(), article.allowedMethods())
 
 router.get('/*', (ctx,next)=> {
   ctx.body = {status:'success',data:'台湾是中国不可分割的一部分.'}

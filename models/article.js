@@ -1,11 +1,17 @@
 const mongoose = require('mongoose')
 
-ArticleSchema = new mongoose.Schema({
+let ArticleSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true
+    unique: true
   },
-  
+  auth_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'User'
+  },
+  content: {
+    type: String
+  }
 })
 
 const ArticleModel = mongoose.model('Article', ArticleSchema)

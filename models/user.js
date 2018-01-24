@@ -30,23 +30,12 @@ let UserSchema = new mongoose.Schema({
   updated_at: {
     type: Date,
     default: Date.now
+  },
+  like_list: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'Article'
   }
 })
-
-UserSchema
-  .virtual('password')
-  .set(function (password) {
-    const self = this
-    const saltBounds = 10
-    this._password = password
-    this.salt = this.makeSalt(saltBounds)
-    this.encryptPassword(password, function(hashpassword) {
-      this.hashpassword = hashpassword
-    })
-  })
-  .get(function() {
-    return this._password
-  })
 // 校验name重复
 UserSchema
   .path('name')
@@ -67,43 +56,32 @@ UserSchema
     },
     message: '这个呢称已经被使用!'
   })
-// login
-UserSchema.statics.login = function (name, password, cb) {
-  this
-    .findOne({
-      name: name
-    }, function (err, user) {
-      if (err || !user) {
-        if (err) 
-          console.log(err);
-        return cb(err, {
-          code: -1,
-          msg: username + ' is not exist!'
-        });
-      }
-      bcrypt
-        .compare(password, user.password, function (error, res) {
-          if (error) {
-            console.log(error);
-            return cb(err, {
-              code: -2,
-              message: 'password is incorrect, please check it again!'
-            });
-          }
+UserSchema
+  .virtual('password')
+  .set(function (password) {
+    const self = this
+    const saltBounds = 10
+    this._password = password
+    this.salt = this.makeSalt(saltBounds)
+    this.hashpassword = this.encryptPassword(password, this.salt)
+  })
+  .get(function() {
+    return this._password
+  })
 
-          return cb(null, user);
-        })
-    })
-}
-UserSchema.methods = {
+UserSchema.statics = {
 	//生成盐
 	makeSalt: function(saltBounds) {
 	  return bcrypt.genSaltSync(saltBounds)
 	},
 	//生成密码
-	encryptPassword: function(password, cb) {
-	  return bcrypt.hash(password, this.salt, cb(hash))
-	}
+	encryptPassword: function(password, salt) {
+	  return bcrypt.hashSync(password, salt)
+  },
+  // 比较
+  compare: function(data, encrypted) {
+    return bcrypt.compare(data, encrypted)
+  }
 }
 const UserModel = mongoose.model('User', UserSchema)
 
