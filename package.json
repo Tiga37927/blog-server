@@ -12,6 +12,7 @@
   "dependencies": {
     "bcrypt": "1.0.3",
     "ejs": "2.5.7",
+    "jsonwebtoken": "8.1.1",
     "koa": "2.4.1",
     "koa-bodyparser": "4.2.0",
     "koa-jwt": "3.3.0",

@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 
 module.exports = {
@@ -62,8 +63,14 @@ module.exports = {
           .compare(params.password, user.hashpassword)
           .then(function (equal) {
             if (equal === true) {
+              let userToken = {
+                name: user.name
+              }
+              const secret = 'jwt demo'
+              const token = jwt.sign(userToken, secret, {expiresIn: '1h'})
               result.success = true
               result.message = "登陆成功"
+              result.token = token
               ctx.body = result
             } else {
               result.success = false
