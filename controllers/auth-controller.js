@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
+const tokenSecert = require('../config/index').tokenSecert
 
 module.exports = {
   // 用户查询
@@ -11,13 +12,13 @@ module.exports = {
     }
     await User
       .find()
-      .then(function (users) {
+      .then((users) => {
         result.success = true
         result.message = '查询成功'
         result.data = users
         ctx.body = result
       })
-      .catch(function (err) {
+      .catch((err) => {
         result.success = false
         result.msg = err
         ctx.body = result
@@ -34,12 +35,12 @@ module.exports = {
     const user = new User(params)
     await user
       .save()
-      .then(function (user) {
+      .then((user) => {
         result.success = true
         result.message = `${user.name}保存成功`
         ctx.body = result
       })
-      .catch(function (err) {
+      .catch((err) => {
         result.success = false
         result.message = `${user.name}保存失败,${err.message}`
         ctx.body = result
@@ -61,13 +62,12 @@ module.exports = {
       } else {
         await User
           .compare(params.password, user.hashpassword)
-          .then(function (equal) {
+          .then((equal) => {
             if (equal === true) {
               let userToken = {
                 name: user.name
               }
-              const secret = 'jwt demo'
-              const token = jwt.sign(userToken, secret, {expiresIn: '1h'})
+              const token = jwt.sign(userToken, tokenSecert, {expiresIn: '1h'}).toString('base64')
               result.success = true
               result.message = "登陆成功"
               result.token = token
@@ -78,7 +78,7 @@ module.exports = {
               ctx.body = result
             }
           })
-          .catch(function (error) {
+          .catch((error) => {
             result.success = false
             result.message = error.message
             ctx.body = result
@@ -100,12 +100,12 @@ module.exports = {
     const user = new User(params)
     await user
       .save()
-      .then(function (user) {
+      .then((user) => {
         result.success = true
         result.message = `${user.name}注册成功`
         ctx.body = result
       })
-      .catch(function (err) {
+      .catch((err) => {
         result.success = false
         result.message = `${user.name}注册失败,${err.message}`
         ctx.body = result

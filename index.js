@@ -6,7 +6,8 @@ const koajwt = require('koa-jwt')
 
 const router = require('./routes')
 const config = require('./config')
-const checkAuth = require('./middlewares/checkAuth')
+const error = require('./middlewares/error')
+const logger = require('./middlewares/logger')
 
 // 链接数据库
 mongoose
@@ -19,9 +20,10 @@ mongoose
 
 const app = new koa()
 
-app.use(koajwt({secret: 'shared-secret'}).unless({path: [/^\/auth\/signIn/, /^\/auth\/signUp/]}));
-app.use(checkAuth())
+app.use(error())
+app.use(logger())
 app.use(bodyParser())
+app.use(koajwt({secret: config.tokenSecert}).unless({path: [/^\/auth\/signIn/, /^\/auth\/signUp/]}))
 // 引用路由
 app
   .use(router.routes())

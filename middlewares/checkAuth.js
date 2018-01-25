@@ -1,9 +1,25 @@
 const jwt = require('jsonwebtoken')
-const verify = jwt.verify
+const tokenSecert = require('../config/index').tokenSecert
 
-module.exports = function () {
-  return async function checkAuth(ctx, next) {
-    console.log('验证的中间件')
+module.exports = () => {
+  return async (ctx, next) => {
+    const token = ctx.header.authorization.split(' ')[1]
+    let payload
+    if (token) {
+      payload = jwt.decode(token, tokenSecert);
+      jwt.verify(token, tokenSecert, function(err, payload) {
+        console.log(payload)
+        payload = payload
+      })
+      ctx.body = {
+        payload
+      }
+    } else {
+      ctx.body = {
+        message: 'token 错误',
+        code: -1
+      }
+    }
     await next()
   }
 }

@@ -11,12 +11,12 @@ module.exports = {
     const article = new Article(params)
     await article
       .save()
-      .then(function (article) {
+      .then((article) => {
         result.success = true
         result.message = `${article.title}保存成功`
         ctx.body = result
       })
-      .catch(function (err) {
+      .catch((err) => {
         result.success = false
         result.message = `${article.title}保存失败,${err.message}`
         ctx.body = result

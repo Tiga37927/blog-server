@@ -41,13 +41,13 @@ UserSchema
   .path('name')
   .validate({
     isAsync: true,
-    validator: function (v, cb) {
+    validator: (v, cb) => {
       const self = this;
       self
         .constructor
         .findOne({
           name: v
-        }, function (err, user) {
+        }, (err, user) => {
           if (user && self.id !== user.id) {
             cb(false)
           }
@@ -58,28 +58,28 @@ UserSchema
   })
 UserSchema
   .virtual('password')
-  .set(function (password) {
+  .set((password) => {
     const self = this
     const saltBounds = 10
     this._password = password
     this.salt = this.makeSalt(saltBounds)
     this.hashpassword = this.encryptPassword(password, this.salt)
   })
-  .get(function() {
+  .get(() => {
     return this._password
   })
 
 UserSchema.statics = {
 	//生成盐
-	makeSalt: function(saltBounds) {
+	makeSalt: (saltBounds) => {
 	  return bcrypt.genSaltSync(saltBounds)
 	},
 	//生成密码
-	encryptPassword: function(password, salt) {
+	encryptPassword: (password, salt) => {
 	  return bcrypt.hashSync(password, salt)
   },
   // 比较
-  compare: function(data, encrypted) {
+  compare: (data, encrypted) => {
     return bcrypt.compare(data, encrypted)
   }
 }
